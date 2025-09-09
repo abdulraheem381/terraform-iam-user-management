@@ -1,81 +1,109 @@
 # Terraform IAM User Management
 
-This project demonstrates how to manage **AWS IAM users, groups, and policies** using Terraform.  
-Instead of creating IAM resources manually in the AWS console, we define them as **Infrastructure as Code (IaC)** to ensure consistency, automation, and scalability.
+This project automates **AWS IAM user and role management** with Terraform.  
+Users and their roles are defined in a simple **YAML file**, making it easy to scale and modify without touching Terraform code.
 
 ---
 
-## 📌 Features
-- Create IAM users
-- Create IAM groups
-- Attach users to groups
-- Attach AWS managed or custom policies
-- Output IAM user details
+## 🚀 Features
+- Create IAM **users** from YAML configuration
+- Assign **multiple roles** per user
+- Automatically attach **AWS-managed IAM policies** to roles
+- Generate **login profiles** with initial passwords
+- Store role-to-policy mapping in a centralized Terraform locals block
 
 ---
 
-## 🛠️ Tech Stack
-- **Terraform** (Infrastructure as Code)
-- **AWS** (Identity and Access Management)
-
----
-
-## 🚀 Usage
-
-### 1️⃣ Initialize Terraform
-```bash
-terraform init
-````
-
-### 2️⃣ Preview Resources
-
-```bash
-terraform plan
+## 📂 File Structure
 ```
 
-### 3️⃣ Apply Changes
+.
+├── providers.tf         # AWS provider (v6.11.0)
+├── roles.tf             # Role creation + policy attachment
+├── users.tf             # User creation + login profiles
+├── user-roles.yaml      # User-to-role mapping
+└── outputs.tf           # Exposes generated passwords
 
-```bash
+````
+
+---
+
+## 🛠️ How It Works
+1. Define users and roles in `user-roles.yaml`:
+   ```yaml
+   users:
+     - username: john
+       roles: [readonly, developer]
+     - username: jane
+       roles: [admin, auditor]
+     - username: lauro
+       roles: [readonly]
+
+
+2. Terraform reads this YAML file with `yamldecode()` and maps users to their roles.
+
+3. `roles.tf` creates IAM roles for each role type and attaches AWS-managed policies.
+
+4. `users.tf` provisions IAM users and login profiles.
+
+---
+
+## 📦 Example: Generated Resources
+
+* Users: `john`, `jane`, `lauro`
+* Roles: `readonly`, `developer`, `admin`, `auditor`
+* Policies attached automatically:
+
+  * `readonly` → `ReadOnlyAccess`
+  * `developer` → `AmazonVPCFullAccess`, `AmazonEC2FullAccess`, `AmazonRDSFullAccess`
+  * `admin` → `AdministratorAccess`
+  * `auditor` → `SecurityAudit`
+
+---
+
+## 🔑 Outputs
+
+Terraform will output randomly generated passwords for each user:
+
+```hcl
+output "passwords" {
+  sensitive = true
+  value = {
+    for user, user_login in aws_iam_user_login_profile.users : user => user_login.password
+  }
+}
+```
+
+> ⚠️ Passwords are marked **sensitive** — they will not appear in logs but can be viewed with:
+
+```sh
+terraform output -json passwords
+```
+
+---
+
+## 🧑‍💻 Usage
+
+```sh
+terraform init
+terraform plan
 terraform apply
 ```
 
-### 4️⃣ Destroy Resources (optional)
-
-```bash
-terraform destroy
-```
-
 ---
 
-## 📂 Project Structure
+## 📌 Requirements
 
-```
-.
-├── main.tf        # IAM users, groups, and policies
-├── variables.tf   # Input variables for customization
-├── outputs.tf     # Outputs such as user ARNs
-```
-
----
-
-## 📸 Example IAM Setup
-
-* Create a group: `devops-group`
-* Create users: `user1`, `user2`
-* Attach policy: `AmazonEC2FullAccess`
+* AWS Provider = 6.11.0
+* AWS account credentials configured
 
 ---
 
 ## 🔗 Follow My Journey
 
-* 📖 [Hashnode Blogs](https://abdulraheem.hashnode.dev)
-* 🐦 [X (Twitter)](https://x.com/yourprofile)
-* 💻 [GitHub](https://github.com/yourprofile)
+* 🌐 [Hashnode Blogs](https://hashnode.com/@abulraheem)
+* 🐦 [X (Twitter)](https://x.com/yourhandle)
+* 💻 [GitHub](https://github.com/yourusername)
 
----
-
-## 📜 License
-
-This project is open-source and available under the **MIT License**.
 
 
