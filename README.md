@@ -107,5 +107,3 @@ terraform apply
 
 
 
-Do you also want me to prepare a **Hashnode blog draft** for this project, similar to your other project blogs, so you can publish it as *Day 15: IAM User Management with Terraform*?
-```
