@@ -102,8 +102,8 @@ terraform apply
 ## 🔗 Follow My Journey
 
 * 🌐 [Hashnode Blogs](https://hashnode.com/@abulraheem)
-* 🐦 [X (Twitter)](https://x.com/yourhandle)
-* 💻 [GitHub](https://github.com/yourusername)
+* 🐦 [X (Twitter)](https://x.com/Abdulraheem183)
+* 💻 [GitHub](https://github.com/abdulraheem381)
 
 
 
